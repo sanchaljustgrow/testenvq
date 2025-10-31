@@ -15,8 +15,7 @@ FROM nginx:1.25-alpine
 
 COPY --from=build /app/dist/app /usr/share/nginx/html
 COPY .env /usr/share/nginx/html/.env
-COPY docker-entrypoint.sh /docker-entrypoint.sh
-COPY src/assets/env.template.js /usr/share/nginx/html/assets/env.template.js
+
 
 RUN chmod +x /docker-entrypoint.sh
 
