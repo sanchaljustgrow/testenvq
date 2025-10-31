@@ -14,7 +14,7 @@ RUN npm run build --configuration=production --output-path=dist/app
 
 # Stage 2: Serve with Nginx
 FROM nginx:1.25-alpine
-COPY src/env.template.js /usr/share/nginx/html/assets/env.js
+COPY src/runtime-env.js /usr/share/nginx/html/runtime-env.js
 
 
 
