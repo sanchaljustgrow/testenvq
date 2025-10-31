@@ -11,7 +11,7 @@ RUN npm install
 COPY . .
 
 # Build the Angular app for production
-RUN npm run build --configuration=production --output-path=dist/app
+RUN npm run build --configuration=production --output-path=dist
 
 # Stage 2: Serve with Nginx
 FROM nginx:1.25-alpine
