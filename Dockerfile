@@ -23,7 +23,7 @@ FROM nginx:1.25-alpine
 COPY src/runtime-env.js /usr/share/nginx/html/runtime-env.js
 
 # Copy built Angular files
-COPY --from=build /app/dist/app /usr/share/nginx/html/
+COPY --from=build /app/dist /usr/share/nginx/html/
 
 # Replace env placeholder at container startup
 CMD ["/bin/sh", "-c", "envsubst '$NG_APP_URL' < /usr/share/nginx/html/runtime-env.js > /usr/share/nginx/html/assets/runtime-env.js && exec nginx -g 'daemon off;'"]
