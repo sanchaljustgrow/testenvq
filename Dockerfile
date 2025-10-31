@@ -1,26 +1,18 @@
-# Stage 1: Build Angular app
-FROM node:20.19.0 AS build
+#Frontend Dockerfile
 
-ARG NG_APP_URL
-ENV NG_APP_URL=${NG_APP_URL}
+# Stage 1: Build Angular App
+FROM node:20.19.0-alpine AS builder
 
 WORKDIR /app
 COPY package*.json ./
 RUN npm install
-
 COPY . .
-RUN npm run build --configuration=production --output-path=dist/TestEnv
+RUN npm install -g @angular/cli && \
+    ng build --configuration production
 
 # Stage 2: Serve with Nginx
-FROM nginx:1.25-alpine
+FROM nginx:alpine
+COPY --from=builder /app/dist/ /usr/share/nginx/html
 
-# Copy runtime env template
-COPY src/runtime-env.js /usr/share/nginx/html/runtime-env.js
-
-# Copy built Angular files from correct folder
-COPY --from=build /app/dist/TestEnv /usr/share/nginx/html
-
-# Replace environment variable placeholder at runtime
-CMD ["/bin/sh", "-c", "envsubst '$NG_APP_URL' < /usr/share/nginx/html/runtime-env.js > /usr/share/nginx/html/assets/runtime-env.js && exec nginx -g 'daemon off;'"]
-
-EXPOSE 80
+EXPOSE 8081
+CMD ["nginx", "-g", "daemon off;"]
