@@ -15,7 +15,7 @@ FROM nginx:1.25-alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copy .env file to Nginx HTML directory
-COPY .env /usr/share/nginx/html/.env
+#COPY .env /usr/share/nginx/html/.env
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
