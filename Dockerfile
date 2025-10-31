@@ -1,38 +1,33 @@
-# Stage 1: Build the Angular app
-FROM node:18-alpine AS build
+# ---------- Stage 1: Build Angular App ----------
+FROM node:20 AS build
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files and install dependencies
+# Copy dependency files and install
 COPY package*.json ./
 RUN npm install
 
-# Copy the rest of the application source code
+# Copy all source code
 COPY . .
 
-# Copy the environment file (for example, .env)
-# Make sure .env is in your project root
+# Copy .env file explicitly (optional if it's already in the context)
 COPY .env .env
 
-# Build the Angular app in production mode
-RUN npm run build --configuration production
+# Build Angular app for production
+RUN npm run build --configuration=production --output-path=dist/TestEnv
 
-# Stage 2: Serve the app with NGINX
-FROM nginx:alpine
+# ---------- Stage 2: Nginx Server ----------
+FROM nginx:1.25-alpine
 
-# Copy built Angular app to NGINX’s html directory
-COPY --from=build /app/dist /usr/share/nginx/html
+# Copy the build output to NGINX’s html directory
+COPY --from=build /app/dist/TestEnv /usr/share/nginx/html
 
-# Copy custom NGINX configuration (optional)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Copy the environment file (if needed for runtime)
-# If you plan to use the .env at runtime via JS injection, keep it here
+# Copy .env file (if you want it available at runtime)
 COPY --from=build /app/.env /usr/share/nginx/html/.env
 
-# Expose port 80
+# Optional: Add a custom NGINX configuration
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 EXPOSE 80
 
-# Start NGINX
 CMD ["nginx", "-g", "daemon off;"]
